@@ -1,32 +1,25 @@
-let messagesContainer = document.getElementById('messages');
-messagesContainer.scrollTop = messagesContainer.scrollHeight;
+const messageContainer=document.getElementById("messages");
+messageContainer.scrollTop=messageContainer.scrollHeight; //scroll pil position relative to the scroller.
 
-const memberContainer = document.getElementById('members__container');
-const memberButton = document.getElementById('members__button');
+const memberContainer=document.querySelector("#members__container");
+const memberButton=document.querySelector("#members__button");
 
-const chatContainer = document.getElementById('messages__container');
-const chatButton = document.getElementById('chat__button');
+const chatContainer=document.querySelector("#messages__container");
+const chatButton=document.querySelector("#chat__button");
 
-let activeMemberContainer = false;
+let activeMemberContainer=false;
 
-memberButton.addEventListener('click', () => {
-  if (activeMemberContainer) {
-    memberContainer.style.display = 'none';
-  } else {
-    memberContainer.style.display = 'block';
-  }
+memberButton.addEventListener("click", ()=>{
+  // if(activeMemberContainer){
+  //   memberContainer.style.display="none";
+  // }else{
+  //   memberContainer.style.display="block";
+  // }
+  // activeMemberContainer=!activeMemberContainer;
+  //refactoring
+  memberContainer.classList.toggle("show");
+})
 
-  activeMemberContainer = !activeMemberContainer;
-});
-
-let activeChatContainer = false;
-
-chatButton.addEventListener('click', () => {
-  if (activeChatContainer) {
-    chatContainer.style.display = 'none';
-  } else {
-    chatContainer.style.display = 'block';
-  }
-
-  activeChatContainer = !activeChatContainer;
+chatButton.addEventListener("click",()=>{
+  chatContainer.classList.toggle("show")
 });
