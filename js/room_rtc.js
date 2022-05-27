@@ -21,12 +21,13 @@ if(!roomId){
 }
 
 let localTracks=[];
-let remoteUser={};
+let remoteUsers={};
 
 let joinRoomInit=async()=>{
-    client=AgoraRTC.createClient({mode:'rtc', codec:'vp8'});
+    client= AgoraRTC.createClient({mode:'rtc', codec:'vp8'});
     await client.join(APP_ID,roomId,token,UID);
 
+    client.on('user-published', handleUserPublished)
     joinStream();
 }
 
@@ -40,6 +41,35 @@ let joinStream=async()=>{
     document.getElementById('streams__container').insertAdjacentHTML('beforeend', player)
 
     localTracks[1].play(`user-${UID}`);
+
+    //publish the track to the channel.
+    await client.publish([localTracks[0],localTracks[1]])
+    
 }
-window.addEventListener("DOMContentLoaded", joinStream);
-// joinRoomInit();
+
+let handleUserPublished=async(user,mediaType)=>{
+    remoteUsers[user.UID]=user;
+
+    await client.subscribe(user,mediaType);
+
+    let player=document.getElementById(`user-container-${user.UID}`);
+
+    //to make sure we don't have duplicate streams  
+    if(player==null){
+        player=` <div class="video__container" id="user-container-${user.UID}">
+                    <div class="video-player" id="user-${user.UID}"></div>
+                </div>`
+        
+            document.getElementById('streams__container').insertAdjacentHTML('beforeend', player);
+            console.log("Player 2 joined")
+    }
+
+    if(mediaType==='video'){
+        user.videoTrack.play(`user-${user.UID}`);
+    }
+    if(mediaType==='audio'){
+        user.audioTrack.play(`user-${user.UID}`);
+    }
+}
+// window.addEventListener("DOMContentLoaded", joinStream);
+joinRoomInit();

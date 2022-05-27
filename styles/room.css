@@ -184,6 +184,7 @@
 #stream__box{
   background-color: #3f434a;
   height: 60vh;
+  display: none;
 }
 .video__container{
   display: flex;
