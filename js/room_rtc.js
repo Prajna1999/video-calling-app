@@ -41,4 +41,5 @@ let joinStream=async()=>{
 
     localTracks[1].play(`user-${UID}`);
 }
-joinRoomInit();
+window.addEventListener("DOMContentLoaded", joinStream);
+// joinRoomInit();
