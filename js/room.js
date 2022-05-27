@@ -23,3 +23,36 @@ memberButton.addEventListener("click", ()=>{
 chatButton.addEventListener("click",()=>{
   chatContainer.classList.toggle("show")
 });
+
+const displayFrame=document.querySelector('#stream__box');
+const videoFrames=document.querySelectorAll('.video__container');
+let userIdDisplayFrame=null;
+
+const expandVideoFrame=(e)=>{
+
+  let child=displayFrame.children[0];
+  if(child){
+    //append back to the streams container
+      document.getElementById("streams__container").appendChild(child);
+  }
+  displayFrame.style.display="block";
+  //add to the banner frame.
+  displayFrame.appendChild(e.target.parentElement.parentElement.parentElement);
+  userIdDisplayFrame=e.target.id;
+  
+  // shrink the sizes of other users.
+  videoFrames.forEach((frame)=>{
+    if(frame.id==userIdDisplayFrame){
+      frame.style.height="100px";
+      frame.style.width="100px";
+      console.log("Hey", frame);
+    }
+  })
+
+
+};
+document.addEventListener("click", (e)=>{
+  if(e.target.parentElement.parentElement.parentElement.classList.contains("video__container")){
+      expandVideoFrame(e);
+  }
+})
