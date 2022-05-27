@@ -1,9 +1,9 @@
 const APP_ID="e376f9d75b694483b14a7075a48748ce";
-let UID=sessionStorage.getItem("uid");
+let uid=sessionStorage.getItem("uid");
 
-if(!UID){
-    UID=String(Math.floor(Math.random()*10000))
-    sessionStorage.setItem("UID", UID);
+if(!uid){
+    uid=String(Math.floor(Math.random()*10000))
+    sessionStorage.setItem("uid", uid);
 }
 
 let token=null;
@@ -25,7 +25,7 @@ let remoteUsers={};
 
 let joinRoomInit=async()=>{
     client= AgoraRTC.createClient({mode:'rtc', codec:'vp8'});
-    await client.join(APP_ID,roomId,token,UID);
+    await client.join(APP_ID,roomId,token,uid);
 
     client.on('user-published', handleUserPublished)
     joinStream();
@@ -34,13 +34,14 @@ let joinRoomInit=async()=>{
 let joinStream=async()=>{
     localTracks=await AgoraRTC.createMicrophoneAndCameraTracks();
 
-    let player=` <div class="video__container" id="user-container-${UID}">
-                    <div class="video-player" id="user-${UID}"></div>
+    let player=` <div class="video__container" id="user-container-${uid}">
+                    <div class="video-player" id="user-${uid}"></div>
                         </div>`
 
     document.getElementById('streams__container').insertAdjacentHTML('beforeend', player)
 
-    localTracks[1].play(`user-${UID}`);
+    localTracks[1].play(`user-${uid}`);
+    localTracks[0].play(`user-${uid}`);
 
     //publish the track to the channel.
     await client.publish([localTracks[0],localTracks[1]])
@@ -48,16 +49,16 @@ let joinStream=async()=>{
 }
 
 let handleUserPublished=async(user,mediaType)=>{
-    remoteUsers[user.UID]=user;
+    remoteUsers[user.uid]=user;
 
     await client.subscribe(user,mediaType);
 
-    let player=document.getElementById(`user-container-${user.UID}`);
+    let player=document.getElementById(`user-container-${user.uid}`);
 
     //to make sure we don't have duplicate streams  
     if(player==null){
-        player=` <div class="video__container" id="user-container-${user.UID}">
-                    <div class="video-player" id="user-${user.UID}"></div>
+        player=` <div class="video__container" id="user-container-${user.uid}">
+                    <div class="video-player" id="user-${user.uid}"></div>
                 </div>`
         
             document.getElementById('streams__container').insertAdjacentHTML('beforeend', player);
@@ -65,10 +66,10 @@ let handleUserPublished=async(user,mediaType)=>{
     }
 
     if(mediaType==='video'){
-        user.videoTrack.play(`user-${user.UID}`);
+        user.videoTrack.play(`user-${user.uid}`);
     }
     if(mediaType==='audio'){
-        user.audioTrack.play(`user-${user.UID}`);
+        user.audioTrack.play(`user-${user.uid}`);
     }
 }
 // window.addEventListener("DOMContentLoaded", joinStream);
