@@ -23,6 +23,9 @@ if(!roomId){
 let localTracks=[];
 let remoteUsers={};
 
+let localScreenTracks;
+let sharingScreen=false;
+
 let joinRoomInit=async()=>{
     client= AgoraRTC.createClient({mode:'rtc', codec:'vp8'});
     await client.join(APP_ID,roomId,token,uid);
@@ -55,7 +58,30 @@ let joinStream=async()=>{
     await client.publish([localTracks[0],localTracks[1]])
     
 }
+const switchToCamera=async()=>{
+    //grab the user video stream DOM element.
+    let player=` <div class="video__container" id="user-container-${uid}">
+                        <div class="video-player" id="user-${uid}"></div>
+                </div>`
+    //put inside the banner frame display.
+    displayFrame.insertAdjacentHTML("beforeend", player);
 
+    //mute the users audio and video tracks for better UX.
+    await localTracks[0].setMuted(true);
+    await localTracks[1].setMuted(true);
+
+    // change the mic and camera btns to muted state.
+    document.getElementById('mic-btn').classList.remove('active');
+    document.getElementById('screen-btn').classList.remove('active');
+
+    //play local video dream.
+    localTracks[1].play(`user-${uid}`);
+
+    //publish only the video track as audiotrack is already published and muted.
+    await client.publish([localTracks[1]]);
+
+
+}
 let handleUserPublished=async(user,mediaType)=>{
     remoteUsers[user.uid]=user;
 
@@ -123,5 +149,49 @@ const toggleMic=async(e)=>{
         button.classList.remove("active")
     }
 }
+
+//screen share.
+const toggleScreen=async(e)=>{
+    let screenButton=e.currentTarget;
+    const cameraBtn=document.getElementById("camera-btn");
+
+    if(!sharingScreen){
+        sharingScreen=true;
+
+        screenButton.classList.add("active");
+        cameraBtn.classList.remove("active");
+        cameraBtn.style.display="block";
+
+        localScreenTracks=await AgoraRTC.createScreenVideoTrack();
+        document.getElementById(`user-container-${uid}`).remove();
+        displayFrame.style.display="block";
+
+        let player=` <div class="video__container" id="user-container-${uid}">
+                        <div class="video-player" id="user-${uid}"></div>
+                    </div>`
+        displayFrame.insertAdjacentHTML("beforeend", player)
+        document.getElementById(`user-container-${uid}`).addEventListener("click", expandVideoFrame);
+
+        userIdDisplayFrame=`user-container-${uid}`;
+        localScreenTracks.play(`user-${uid}`);
+
+        //unpublish the current video track
+        await client.unpublish([localTracks[1]])
+        // publish the local screen track.
+        await client.publish(localScreenTracks);
+
+    }else{
+        sharingScreen=false;
+        cameraBtn.style.display="block";
+        //remove the ui element.
+        document.getElementById(`user-container-${uid}`).remove();
+        await client.unpublish([localScreenTracks]);
+        // await client.publish([localTracks[1]])
+
+        switchToCamera();
+
+    }
+}
 document.getElementById("camera-btn").addEventListener("click",toggleCamera);
 document.getElementById("mic-btn").addEventListener("click",toggleMic);
+document.getElementById('screen-btn').addEventListener("click", toggleScreen);
