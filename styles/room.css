@@ -206,6 +206,11 @@
   height: 300px;
   width: 300px;
   border-radius: 6px;
+
+  background-image: url(../images/logo.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 75px;
 }
 .video-player{
   height: 100%;

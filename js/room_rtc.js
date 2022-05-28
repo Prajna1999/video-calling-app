@@ -75,8 +75,9 @@ let handleUserPublished=async(user,mediaType)=>{
             console.log("Player 2 joined")
     }
     if(displayFrame.style.display){
-        player.style.height="100%";
-        player.style.width="100%";
+        const videoFrame=document.getElementById(`user-container-${user.uid}`)
+        videoFrame.style.height="100%";
+        videoFrame.style.width="100%";
     }
     if(mediaType==='video'){
         user.videoTrack.play(`user-${user.uid}`);
