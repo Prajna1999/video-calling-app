@@ -186,6 +186,16 @@
   height: 60vh;
   display: none;
 }
+#stream__box .video__container{
+  border: 2px solid #000;
+  border-radius: 6px;
+  height: 100%;
+  width: 100%;
+}
+
+#streams__box video{
+  border-radius: 6px;
+}
 .video__container{
   display: flex;
   justify-content: center;

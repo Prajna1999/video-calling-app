@@ -33,16 +33,23 @@ let joinRoomInit=async()=>{
 }
 
 let joinStream=async()=>{
-    localTracks=await AgoraRTC.createMicrophoneAndCameraTracks();
+    localTracks=await AgoraRTC.createMicrophoneAndCameraTracks({},{encoderConfig:{
+        width:{min:640, ideal:1920, max:1920},
+        height:{min:480, ideal:1080, max:1080}
+    }});
 
     let player=` <div class="video__container" id="user-container-${uid}">
                     <div class="video-player" id="user-${uid}"></div>
                         </div>`
 
-    document.getElementById('streams__container').insertAdjacentHTML('beforeend', player)
+    document.getElementById('streams__container').insertAdjacentHTML('beforeend', player);
+    document.getElementById(`user-container-${uid}`).addEventListener("click", expandVideoFrame);
 
-    localTracks[1].play(`user-${uid}`);
-    localTracks[0].play(`user-${uid}`);
+    // localTracks[1].play(`user-${uid}`);
+    // localTracks[0].play(`user-${uid}`);
+    localTracks.forEach((track)=>{
+        track.play(`user-${uid}`)
+    })
 
     //publish the track to the channel.
     await client.publish([localTracks[0],localTracks[1]])
@@ -63,9 +70,14 @@ let handleUserPublished=async(user,mediaType)=>{
                 </div>`
         
             document.getElementById('streams__container').insertAdjacentHTML('beforeend', player);
+            document.getElementById(`user-container-${user.uid}`).addEventListener("click", expandVideoFrame);
+
             console.log("Player 2 joined")
     }
-
+    if(displayFrame.style.display){
+        player.style.height="100%";
+        player.style.width="100%";
+    }
     if(mediaType==='video'){
         user.videoTrack.play(`user-${user.uid}`);
     }
@@ -76,6 +88,10 @@ let handleUserPublished=async(user,mediaType)=>{
 let handleUserLeft=async(user)=>{
     delete remoteUsers[user.uid];
     document.getElementById(`user-container-${user.uid}`).remove();
+
+    if(userIdDisplayFrame===`user-container-${user.uid}`){
+        displayFrame.style.display=null;
+    }
 }
 // window.addEventListener("DOMContentLoaded", joinStream);
 joinRoomInit();

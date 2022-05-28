@@ -24,7 +24,7 @@ chatButton.addEventListener("click",()=>{
   chatContainer.classList.toggle("show")
 });
 
-const displayFrame=document.querySelector('#stream__box');
+const displayFrame=document.getElementById('stream__box');
 const videoFrames=document.querySelectorAll('.video__container');
 let userIdDisplayFrame=null;
 
@@ -38,11 +38,11 @@ const expandVideoFrame=(e)=>{
   displayFrame.style.display="block";
   //add to the banner frame.
   displayFrame.appendChild(e.target.parentElement.parentElement.parentElement);
-  userIdDisplayFrame=e.target.id;
+  userIdDisplayFrame=e.target.parentElement.parentElement.parentElement.id;
   
   // shrink the sizes of other users.
   videoFrames.forEach((frame)=>{
-    if(frame.id==userIdDisplayFrame){
+    if(frame.id!==userIdDisplayFrame){
       frame.style.height="100px";
       frame.style.width="100px";
       console.log("Hey", frame);
@@ -54,5 +54,26 @@ const expandVideoFrame=(e)=>{
 document.addEventListener("click", (e)=>{
   if(e.target.parentElement.parentElement.parentElement.classList.contains("video__container")){
       expandVideoFrame(e);
+      
   }
 })
+
+const hideDisplayFrame=()=>{
+  userIdDisplayFrame=null;
+  displayFrame.style.display=null;
+
+  let child=displayFrame.children[0];
+  console.log(child)
+  if(child){
+    document.getElementById("streams__container").appendChild(child);
+  }
+
+
+  for(let i = 0; videoFrames.length > i; i++){
+    videoFrames[i].style.height = '300px'
+    videoFrames[i].style.width = '300px'
+}
+
+}
+
+displayFrame.addEventListener("click", hideDisplayFrame);
