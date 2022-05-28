@@ -20,6 +20,15 @@ if(!roomId){
     roomId="main";
 }
 
+//the user must have a displayname. otherwise redirect theuser to the lobby page.
+//it uses sessionStorage.
+
+let displayName=sessionStorage.getItem("display-name");
+
+if(!displayName){
+    window.location=`lobby.html`;
+}
+
 let localTracks=[];
 let remoteUsers={};
 
