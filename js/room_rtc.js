@@ -95,3 +95,32 @@ let handleUserLeft=async(user)=>{
 }
 // window.addEventListener("DOMContentLoaded", joinStream);
 joinRoomInit();
+
+// toggleCamera.
+
+const toggleCamera=async(e)=>{
+    const button=e.currentTarget;
+
+    if(localTracks[1].muted){
+        await localTracks[1].setMuted(false);
+        button.classList.add("active");
+    }else{
+        await localTracks[1].setMuted(true);
+        button.classList.remove("active")
+    }
+}
+
+//toggle mic
+const toggleMic=async(e)=>{
+    const button=e.currentTarget;
+
+    if(localTracks[0].muted){
+        await localTracks[0].setMuted(false);
+        button.classList.add("active");
+    }else{
+        await localTracks[0].setMuted(true);
+        button.classList.remove("active")
+    }
+}
+document.getElementById("camera-btn").addEventListener("click",toggleCamera);
+document.getElementById("mic-btn").addEventListener("click",toggleMic);
