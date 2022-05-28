@@ -6,10 +6,13 @@ if(!uid){
     sessionStorage.setItem("uid", uid);
 }
 
+//rtc client for video and audio
 let token=null;
-
 let client;
 
+//rtm client for realtime messaging.
+let rtmChannel;
+let rtmClient;
 //room.html?room=234
 const queryString=window.location.search;
 const urlParams=new URLSearchParams(queryString);
@@ -42,6 +45,20 @@ let joinRoomInit=async()=>{
     client.on('user-published', handleUserPublished);
     client.on('user-left', handleUserLeft);
     joinStream();
+
+
+    //join the rtm channel.
+    rtmClient=await AgoraRTM.createInstance(APP_ID);
+    await rtmClient.login({uid, token});
+
+    // createa channelfor rtm.
+    rtmChannel=await rtmClient.createChannel("roomId");
+
+    //join the rtmChannel.
+    await rtmChannel.join();
+
+    //event listner on MemeberJoined event.
+    rtmChannel.on("MemberJoined", handleMemberJoined);
 }
 
 let joinStream=async()=>{
