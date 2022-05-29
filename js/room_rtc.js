@@ -39,6 +39,32 @@ let localScreenTracks;
 let sharingScreen=false;
 
 let joinRoomInit=async()=>{
+
+     //join the rtm channel.
+     rtmClient=await AgoraRTM.createInstance(APP_ID);
+     await rtmClient.login({uid, token});
+ 
+     //adding it as a channel attribute.
+     await rtmClient.addOrUpdateLocalUserAttributes({'name':displayName})
+     
+     // createa channelfor rtm.
+     rtmChannel=await rtmClient.createChannel("roomId");
+ 
+     //join the rtmChannel.
+     await rtmChannel.join();
+ 
+     //event listner on MemeberJoined event.
+     rtmChannel.on("MemberJoined", handleMemberJoined);
+     //event listener to the memberLeft event.
+     rtmChannel.on("MemberLeft", handleMemberLeft);
+     //event listener on channel message event
+     rtmChannel.on("ChannelMessage", handleChannelMessage);
+ 
+     getMembers();
+    
+     addBotMessageToDom(`Welcome to the room ${displayName} 👋`)
+
+
     client= AgoraRTC.createClient({mode:'rtc', codec:'vp8'});
     await client.join(APP_ID,roomId,token,uid);
 
@@ -49,27 +75,7 @@ let joinRoomInit=async()=>{
     client.on('user-left', handleUserLeft);
     joinStream();
 
-    //join the rtm channel.
-    rtmClient=await AgoraRTM.createInstance(APP_ID);
-    await rtmClient.login({uid, token});
-
-    //adding it as a channel attribute.
-    await rtmClient.addOrUpdateLocalUserAttributes({'name':displayName})
-    
-    // createa channelfor rtm.
-    rtmChannel=await rtmClient.createChannel("roomId");
-
-    //join the rtmChannel.
-    await rtmChannel.join();
-
-    //event listner on MemeberJoined event.
-    rtmChannel.on("MemberJoined", handleMemberJoined);
-    //event listener to the memberLeft event.
-    rtmChannel.on("MemberLeft", handleMemberLeft);
-    //event listener on channel message event
-    rtmChannel.on("ChannelMessage", handleChannelMessage);
-
-    getMembers();
+   
 
 }
 

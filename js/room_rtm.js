@@ -7,13 +7,16 @@ const handleMemberJoined=async(memberId)=>{
     //get the members array length.
     let members=await rtmChannel.getMembers();
     updateMemberTotal(members);
+
+    let {name}=await rtmClient.getUserAttributesByKeys((memberId),["name"])
+    addBotMessageToDom(`Welcome to the room ${name} 👋`)
 }   
 
 //add the memebers to the UI/DOM.
 const addMemberToDom=async(memberId)=>{
 
     //get the name value from user attributes by name from the room_rtc js.Also destructure the return value.
-    let {name}=await rtmClient.getUserAttributesByKeys(memberId,['name'])
+    let {name}=await rtmClient.getUserAttributesByKeys((memberId),["name"])
 
     const membersWrapper=document.getElementById("member__list");
     let memberItem= `<div class="member__wrapper" id="member__${memberId}__wrapper">
@@ -40,7 +43,14 @@ const handleMemberLeft=async(memberId)=>{
 //remove the member from the DOM
 const removeMemberFromDom=async(memberId)=>{
     let memberWrapper=document.getElementById(`member__${memberId}__wrapper`);
-    memberWrapper.remove()
+
+    //returns an HTMLCollection object. So index[0] is the member Name.
+    let name=memberWrapper.getElementsByClassName("member_name")[0].textContent;
+    memberWrapper.remove();
+
+    //add a bot message when a user leaves.
+
+    addBotMessageToDom(`${name} has left the room.`)
 };
 
 //show all channel members to everyone.
@@ -55,6 +65,12 @@ const getMembers=async()=>{
 const handleChannelMessage=async(messageData, memberId)=>{
     const data=JSON.parse(messageData.text);
     console.log("Message", data);
+
+    //show the message to toher peers.
+    if(data.type==='chat'){
+        addMemberToDom(data.displayName, data.messageText);
+    }
+    
     
 }
 
@@ -91,9 +107,27 @@ const addMessageToDom=(name,message)=>{
 
     //scrollpoistion always the last message sent,
     const lastMessage=document.querySelector("#messages .message__wrapper:last-child");
-    lastMessage.scrollIntoView();
+    if(lastMessage){
+        lastMessage.scrollIntoView();
+
+    }
 } 
 
+//add bot message to DOM.
+const addBotMessageToDom=async(botMessage)=>{
+
+    let messageWrapper=document.querySelector("#messages");
+
+    let newMessage=` <div class="message__wrapper">
+                            <div class="message__body__bot">
+                                <strong class="message__author__bot">Mumble Bot 🤖</strong>
+                                <p class="message__text__bot">
+                                ${botMessage}
+                                </p>
+                            </div>
+                        </div>`
+    messageWrapper.insertAdjacentHTML("beforeend", newMessage);
+}
 
 //when the user shuts his computer down.
 const leaveChannel=async(e)=>{
