@@ -51,6 +51,49 @@ const getMembers=async()=>{
     updateMemberTotal(members);
     members.forEach(member=>addMemberToDom(member));
 }
+//handleChannelMessage function.
+const handleChannelMessage=async(messageData, memberId)=>{
+    const data=JSON.parse(messageData.text);
+    console.log("Message", data);
+    
+}
+
+
+//send messages to the chatroom functionality. it's boradcast to the channel, not p2p.
+const sendMessage=async(e)=>{
+    e.preventDefault();//message from the form.
+
+    //grab the message value from the form.
+    const message=e.target.message.value;
+    //send message to the entire channel. sending something to the server: stringify.
+    //so that it can be parsed as a JSON on the DOM.
+    rtmChannel.sendMessage({text:JSON.stringify({'type':'chat', 'messageText':message,'displayName':displayName})});
+
+    //addmessage to DOM
+    addMessageToDom(displayName,message);
+
+    // reset the form after the message is sent.
+    e.target.reset();
+}
+//add new message to dom function.
+const addMessageToDom=(name,message)=>{
+    let messageWrapper=document.querySelector("#messages");
+
+    let newMessage=` <div class="message__wrapper">
+                            <div class="message__body">
+                                <strong class="message__author">${name} 👋</strong>
+                                <p class="message__text">
+                                ${message}
+                                </p>
+                            </div>
+                        </div>`
+    messageWrapper.insertAdjacentHTML("beforeend", newMessage);
+
+    //scrollpoistion always the last message sent,
+    const lastMessage=document.querySelector("#messages .message__wrapper:last-child");
+    lastMessage.scrollIntoView();
+} 
+
 
 //when the user shuts his computer down.
 const leaveChannel=async(e)=>{
@@ -61,3 +104,4 @@ const leaveChannel=async(e)=>{
 
 //ensure the function is called everytime.
 window.addEventListener("beforeunload", leaveChannel);
+document.getElementById("message__form").addEventListener("submit", sendMessage);

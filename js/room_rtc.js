@@ -55,7 +55,7 @@ let joinRoomInit=async()=>{
 
     //adding it as a channel attribute.
     await rtmClient.addOrUpdateLocalUserAttributes({'name':displayName})
-    await rtmClient.add
+    
     // createa channelfor rtm.
     rtmChannel=await rtmClient.createChannel("roomId");
 
@@ -64,7 +64,11 @@ let joinRoomInit=async()=>{
 
     //event listner on MemeberJoined event.
     rtmChannel.on("MemberJoined", handleMemberJoined);
+    //event listener to the memberLeft event.
     rtmChannel.on("MemberLeft", handleMemberLeft);
+    //event listener on channel message event
+    rtmChannel.on("ChannelMessage", handleChannelMessage);
+
     getMembers();
 
 }
