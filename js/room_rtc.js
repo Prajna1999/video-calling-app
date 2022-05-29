@@ -42,15 +42,20 @@ let joinRoomInit=async()=>{
     client= AgoraRTC.createClient({mode:'rtc', codec:'vp8'});
     await client.join(APP_ID,roomId,token,uid);
 
+    
+    
+
     client.on('user-published', handleUserPublished);
     client.on('user-left', handleUserLeft);
     joinStream();
-
 
     //join the rtm channel.
     rtmClient=await AgoraRTM.createInstance(APP_ID);
     await rtmClient.login({uid, token});
 
+    //adding it as a channel attribute.
+    await rtmClient.addOrUpdateLocalUserAttributes({'name':displayName})
+    await rtmClient.add
     // createa channelfor rtm.
     rtmChannel=await rtmClient.createChannel("roomId");
 
@@ -59,6 +64,9 @@ let joinRoomInit=async()=>{
 
     //event listner on MemeberJoined event.
     rtmChannel.on("MemberJoined", handleMemberJoined);
+    rtmChannel.on("MemberLeft", handleMemberLeft);
+    getMembers();
+
 }
 
 let joinStream=async()=>{
