@@ -307,6 +307,8 @@
   display: flex;
   gap: 1rem;
   transform: translateX(-50%);
+
+  display: none;
 }
 
 .stream__actions a,
@@ -335,4 +337,17 @@
 .stream__actions a:hover,
 .stream__actions button:hover {
   background-color: #845695;
+}
+#join-btn{
+  background-color: #845695;
+  font-size: 18px;
+  padding: 25px 50px;
+  border: none;
+  color: #fff;
+  position: fixed;
+  bottom: 1rem;
+  border-radius: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: pointer;
 }

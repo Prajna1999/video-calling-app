@@ -70,7 +70,10 @@ const handleChannelMessage=async(messageData, memberId)=>{
     if(data.type==='chat'){
         addMemberToDom(data.displayName, data.messageText);
     }
-    
+    //if user leaves the stream, leve the user-cotainer from DOM.
+    if(data.type==="user_left"){
+       document.getElementById(`user-container-${data.uid}`).remove();
+    }
     
 }
 
