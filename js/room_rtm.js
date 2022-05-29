@@ -3,6 +3,10 @@
 const handleMemberJoined=async(memberId)=>{
     console.log("A new member has joind the channel", memberId);
     addMemberToDom(memberId);
+
+    //get the members array length.
+    let members=await rtmChannel.getMembers();
+    updateMemberTotal(members);
 }   
 
 //add the memebers to the UI/DOM.
@@ -19,10 +23,18 @@ const addMemberToDom=async(memberId)=>{
 
     membersWrapper.insertAdjacentHTML("beforeend", memberItem);
 }
+//update total no. of members.
+const updateMemberTotal=async(members)=>{
+    document.getElementById("members__count").innerText=members.length;
+}
 
 //handle user left event
 const handleMemberLeft=async(memberId)=>{
     removeMemberFromDom(memberId);
+    
+    let members=await rtmChannel.getMembers();
+    updateMemberTotal(members);
+
 }
 
 //remove the member from the DOM
@@ -35,6 +47,8 @@ const removeMemberFromDom=async(memberId)=>{
 const getMembers=async()=>{
     let members=await rtmChannel.getMembers();
 
+    //update the memberList on first load.
+    updateMemberTotal(members);
     members.forEach(member=>addMemberToDom(member));
 }
 
